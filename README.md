@@ -18,22 +18,16 @@ Make short, mobile-friendly gospel tracts and send them by text. Recipients open
 4. After a minute your site is live at `https://YOUR-USERNAME.github.io/sent/`.
 5. Open that address on your phone. Optionally, use "Add to Home Screen" so it works like an app.
 
-Make and send tracts from that address, so the links point to your public site.
+Make and send tracts from that address. Links always point to the address you opened Sent from.
 
 ## Notes
 
 - Scripture quotations are from the Berean Standard Bible (BSB), public domain. Check the template verses against berean.bible before sending widely.
 - If you change the address of your site later, links you already sent will stop working unless the old address still serves the file.
 
-## Church library (short links for your own tracts)
+## Adding tracts
 
-`library.js` holds church-approved tracts. Each appears under "Church library" in the builder and gets a short link based on its `id`.
-
-1. Write the tract in Sent.
-2. Go to Send → Church library, choose a short link name, and tap **Copy library entry**.
-3. On GitHub, open `library.js`, tap the pencil to edit, paste the entry before the final `];`, and commit.
-
-Don't rename or delete an `id` once its link has been shared.
+`library.js` holds extra tracts that appear under "Start from," each with its own short link based on its `id` (for example `…/#new-start`). To add one, copy the existing entry in `library.js`, edit the text, give it a new `id`, and commit. Don't rename or delete an `id` once its link has been shared.
 
 ## Privacy
 
