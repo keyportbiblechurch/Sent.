@@ -9,7 +9,8 @@
   To add a tract: copy an existing entry, change the text, give it a new "id",
   and commit on GitHub. The id becomes its short link: .../Sent./#its-id
   Don't rename or delete an id after its link has been shared.
-  "topic" groups tracts in the list: The Gospel, Hard times, Big questions, Holidays.
+  "topic" groups tracts in the list: The Gospel, Hard times, Big questions, Seasons.
+  "months" (optional, 1-12) marks a seasonal tract "In season" during those months.
   Scripture: Berean Standard Bible (BSB), public domain. Quote it exactly.
 */
 
@@ -552,8 +553,88 @@ window.SENT_LIBRARY = [
     }
   },
   {
+    "id": "new-year",
+    "topic": "Seasons",
+    "months": [
+      12,
+      1
+    ],
+    "name": "A New Year, A New Heart",
+    "title": "A New Year, A New Heart",
+    "subtitle": "Resolutions come and go. Here's a fresh start that lasts.",
+    "pages": [
+      {
+        "heading": "Mercy for every morning",
+        "message": "Before you've kept a single resolution or broken one, God offers something better: mercy that's new every day.",
+        "ref": "Lamentations 3:22–23",
+        "verse": "Because of the loving devotion of the LORD we are not consumed, for His mercies never fail. They are new every morning; great is Your faithfulness!"
+      },
+      {
+        "heading": "More than a resolution",
+        "message": "Most resolutions try to change our habits. God promises to change our hearts.",
+        "ref": "Ezekiel 36:26",
+        "verse": "I will give you a new heart and put a new spirit within you; I will remove your heart of stone and give you a heart of flesh."
+      },
+      {
+        "heading": "Something new is coming",
+        "message": "God is in the business of new beginnings, even in places that feel like a wilderness.",
+        "ref": "Isaiah 43:19",
+        "verse": "Behold, I am about to do something new; even now it is coming. Do you not see it? Indeed, I will make a way in the wilderness and streams in the desert."
+      }
+    ],
+    "response": {
+      "heading": "Begin the year with Him",
+      "message": "The best way to start a new year is to start a new life with Jesus.",
+      "ref": "2 Corinthians 5:17",
+      "verse": "Therefore if anyone is in Christ, he is a new creation. The old has passed away. Behold, the new has come!",
+      "prayer": "God, I want more than a new year. I want a new heart. I'm sorry for my sin. Thank You that Jesus died and rose again for me. I trust Him as my Lord. Make me new. Amen."
+    }
+  },
+  {
+    "id": "good-friday",
+    "topic": "Seasons",
+    "months": [
+      3,
+      4
+    ],
+    "name": "Why Call It Good Friday?",
+    "title": "Why Call It Good Friday?",
+    "subtitle": "The darkest day in history, and why Christians call it good.",
+    "pages": [
+      {
+        "heading": "A day of suffering",
+        "message": "On the first Good Friday, Jesus was beaten, mocked, and nailed to a cross. Centuries earlier, the prophet Isaiah described why.",
+        "ref": "Isaiah 53:5",
+        "verse": "But He was pierced for our transgressions, He was crushed for our iniquities; the punishment that brought us peace was upon Him, and by His stripes we are healed."
+      },
+      {
+        "heading": "He carried what we couldn't",
+        "message": "Jesus wasn't dying for His own wrongs. He had none. He was carrying ours.",
+        "ref": "1 Peter 2:24",
+        "verse": "He Himself bore our sins in His body on the tree, so that we might die to sin and live to righteousness. “By His stripes you are healed.”"
+      },
+      {
+        "heading": "It is finished",
+        "message": "Jesus' last words weren't a cry of defeat. They were the announcement of a debt paid in full.",
+        "ref": "John 19:30",
+        "verse": "When Jesus had received the sour wine, He said, “It is finished.” And bowing His head, He yielded up His spirit."
+      }
+    ],
+    "response": {
+      "heading": "That's why it's good",
+      "message": "It was the worst day for Jesus, and the best news for us: God's love was shown in full.",
+      "ref": "Romans 5:8",
+      "verse": "But God proves His love for us in this: While we were still sinners, Christ died for us.",
+      "prayer": "Jesus, thank You for going to the cross for me. I believe You carried my sins and rose again. I trust You as my Savior and Lord. Amen."
+    }
+  },
+  {
     "id": "easter",
-    "topic": "Holidays",
+    "topic": "Seasons",
+    "months": [
+      3,
+      4
+    ],
     "name": "Why Easter Matters",
     "title": "Why Easter Matters",
     "subtitle": "More than eggs and spring flowers: the event that changed everything.",
@@ -592,8 +673,98 @@ window.SENT_LIBRARY = [
     }
   },
   {
+    "id": "fathers-day",
+    "topic": "Seasons",
+    "months": [
+      6
+    ],
+    "name": "A Father Who Runs to You",
+    "title": "A Father Who Runs to You",
+    "subtitle": "Whatever your story with your own father, there is a Father who loves you completely.",
+    "pages": [
+      {
+        "heading": "The Father we all need",
+        "message": "Some of us had wonderful fathers. Some had absent or hurtful ones. God is the Father none of us could earn.",
+        "ref": "Psalm 68:5",
+        "verse": "A father of the fatherless and a defender of widows is God in His holy habitation."
+      },
+      {
+        "heading": "Compassion, not condemnation",
+        "message": "God isn't a distant, disappointed father. He is full of compassion toward His children.",
+        "ref": "Psalm 103:13",
+        "verse": "As a father has compassion on his children, so the LORD has compassion on those who fear Him."
+      },
+      {
+        "heading": "He runs to meet you",
+        "message": "Jesus told of a son who wasted everything. When he finally came home, his father didn't wait. He ran.",
+        "ref": "Luke 15:20",
+        "verse": "So he got up and went to his father. But while he was still in the distance, his father saw him and was filled with compassion. He ran to his son, embraced him, and kissed him."
+      },
+      {
+        "heading": "Called His children",
+        "message": "Through Jesus, God doesn't just forgive us. He adopts us as His own.",
+        "ref": "1 John 3:1",
+        "verse": "Behold what manner of love the Father has given to us, that we should be called children of God. And that is what we are! The reason the world does not know us is that it did not know Him."
+      }
+    ],
+    "response": {
+      "heading": "Come home",
+      "message": "The Father is waiting with open arms. You can come to Him through Jesus today.",
+      "ref": "John 1:12",
+      "verse": "But to all who did receive Him, to those who believed in His name, He gave the right to become children of God—",
+      "prayer": "Father, I want to come home. I'm sorry for going my own way. Thank You for sending Jesus to die for my sins and rise again. I receive Him and trust Him as my Lord. Amen."
+    }
+  },
+  {
+    "id": "thanksgiving",
+    "topic": "Seasons",
+    "months": [
+      11
+    ],
+    "name": "A Reason to Give Thanks",
+    "title": "A Reason to Give Thanks",
+    "subtitle": "Beyond the turkey and the table: the gift that gives every other gift its meaning.",
+    "pages": [
+      {
+        "heading": "Every good thing has a Giver",
+        "message": "The food on the table, the people around it, the breath in our lungs: every good gift comes from God.",
+        "ref": "James 1:17",
+        "verse": "Every good and perfect gift is from above, coming down from the Father of the heavenly lights, with whom there is no change or shifting shadow."
+      },
+      {
+        "heading": "A love that never runs out",
+        "message": "Seasons change and circumstances shift, but God's love doesn't.",
+        "ref": "Psalm 107:1",
+        "verse": "Give thanks to the LORD, for He is good; His loving devotion endures forever."
+      },
+      {
+        "heading": "Thankful in every season",
+        "message": "Even in a hard year, Christians can give thanks, not for everything that happens, but for the God who holds them through it.",
+        "ref": "1 Thessalonians 5:18",
+        "verse": "Give thanks in every circumstance, for this is God’s will for you in Christ Jesus."
+      },
+      {
+        "heading": "The greatest gift",
+        "message": "Of all God's gifts, one is beyond words: His Son, Jesus, who came to bring us back to Him.",
+        "ref": "2 Corinthians 9:15",
+        "verse": "Thanks be to God for His indescribable gift!"
+      }
+    ],
+    "response": {
+      "heading": "Receive the gift",
+      "message": "God's greatest gift isn't earned. It's received with open hands.",
+      "ref": "John 3:16",
+      "verse": "For God so loved the world that He gave His one and only Son, that everyone who believes in Him shall not perish but have eternal life.",
+      "prayer": "God, thank You for every good gift, and most of all for Jesus. I believe He died for my sins and rose again. I receive Him as my Savior and Lord. Amen."
+    }
+  },
+  {
     "id": "christmas",
-    "topic": "Holidays",
+    "topic": "Seasons",
+    "months": [
+      11,
+      12
+    ],
     "name": "The Real Gift of Christmas",
     "title": "The Real Gift of Christmas",
     "subtitle": "Behind the lights and wrapping paper is the best news ever announced.",

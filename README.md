@@ -19,15 +19,24 @@ Each tract ends with next steps: Read the Bible (the Gospel of John, BSB), Find 
 | `index.html` | The app |
 | `library.js` | Church settings and the approved tract library |
 | `manifest.webmanifest`, `icon-*.png` | Home-screen app name and icons |
+| `og-image.png` | The preview card shown when a link is texted or posted |
 | `fonts/` | Self-hosted fonts |
 
 ## Publishing (GitHub Pages)
 
 Upload every file to the top level of the repo, with `fonts/` kept as a folder. In **Settings → Pages**, choose **Deploy from a branch**, then `main`, then `/ (root)`. Check the version shown at the bottom of the builder to confirm an update is live.
 
+## Link previews
+
+When a Sent link is texted or posted, iMessage, Facebook and other apps show `og-image.png` (the Sent wordmark and "a message for you") with the title "A message for you." The preview deliberately doesn't name the church, so it reads like a personal message; the church is credited inside the tract. The preview tags in `index.html` use the full site address (`https://keyportbiblechurch.github.io/Sent./`). **If the repo is renamed or moved to a custom domain, update that address in the `og:url` and `og:image` tags.** Every link shows the same preview, by design, so the tract itself stays a surprise and nothing personal appears in the preview.
+
+## Follow-up guide
+
+The Send tab has a "When they respond" guide for members, with sample replies to copy. Its text is in `index.html` (search for `When someone responds`).
+
 ## Managing the tract library
 
-All tracts live in `library.js`. To add one, copy an existing entry, change the text, give it a new `id`, choose a `topic` (The Gospel, Hard times, Big questions, Holidays), and commit. The `id` becomes the tract's short link, like `…/Sent./#grief`. Don't rename or delete an `id` once its link has been shared.
+All tracts live in `library.js`. To add one, copy an existing entry, change the text, give it a new `id`, choose a `topic` (The Gospel, Hard times, Big questions, Seasons), optionally add `months` (like `[11, 12]`) to mark it "In season", and commit. The `id` becomes the tract's short link, like `…/Sent./#grief`. Don't rename or delete an `id` once its link has been shared.
 
 Scripture is quoted from the Berean Standard Bible (BSB), public domain. The current library's verses were taken directly from the official BSB text published by BSB Publishing.
 
