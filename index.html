@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sent — A message for you</title>
+<meta property="og:title" content="A message for you">
+<meta property="og:description" content="Someone sent you something short. Tap to read.">
+<meta name="theme-color" content="#f6f1e8">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png?v=1.8">
+<link rel="apple-touch-icon" href="icon-180.png?v=1.8">
+<link rel="manifest" href="manifest.webmanifest?v=1.8">
+<meta name="apple-mobile-web-app-title" content="Sent">
+<meta property="og:image" content="icon-512.png">
+<meta name="referrer" content="no-referrer">
+<meta name="sent-version" content="1.8">
+<style>
+@font-face{font-family:Newsreader;font-style:normal;font-weight:400;font-display:swap;src:url(fonts/newsreader-latin-400-normal.woff2?v=1.8) format("woff2")}
+@font-face{font-family:Newsreader;font-style:italic;font-weight:400;font-display:swap;src:url(fonts/newsreader-latin-400-italic.woff2?v=1.8) format("woff2")}
+@font-face{font-family:Newsreader;font-style:normal;font-weight:600;font-display:swap;src:url(fonts/newsreader-latin-600-normal.woff2?v=1.8) format("woff2")}
+@font-face{font-family:Inter;font-style:normal;font-weight:400;font-display:swap;src:url(fonts/inter-latin-400-normal.woff2?v=1.8) format("woff2")}
+@font-face{font-family:Inter;font-style:normal;font-weight:500;font-display:swap;src:url(fonts/inter-latin-500-normal.woff2?v=1.8) format("woff2")}
+@font-face{font-family:Inter;font-style:normal;font-weight:600;font-display:swap;src:url(fonts/inter-latin-600-normal.woff2?v=1.8) format("woff2")}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;background:#f3f2ef;color:#1d1d1b}
+button,input,textarea,select{font:inherit;color:inherit}
+.serif{font-family:Newsreader,Georgia,serif}
+
+/* ---------- TRACT VIEWER ---------- */
+.tract{--bg:#f6f1e8;--ink:#23201b;--muted:#6f665a;--accent:#a4542f;--card:#fffaf2;--line:#e4dacb;
+  position:relative;height:100%;background:var(--bg);color:var(--ink);overflow:hidden}
+.tract .scroller{height:100%;overflow-y:auto;scroll-snap-type:y proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tract .scroller::-webkit-scrollbar{display:none}
+.tract .bar{position:absolute;top:0;left:0;height:3px;background:var(--accent);width:0;z-index:3;transition:width .15s}
+.pg{min-height:100%;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;
+  padding:calc(56px + env(safe-area-inset-top)) max(28px,calc((100% - 504px)/2)) calc(56px + env(safe-area-inset-bottom))}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:18px}
+.cover h1{font-family:Newsreader,Georgia,serif;font-weight:600;font-size:clamp(36px,10vw,52px);line-height:1.05;letter-spacing:-.01em}
+.cover .sub{font-family:Newsreader,Georgia,serif;font-size:21px;line-height:1.4;color:var(--muted);margin-top:18px}
+.note{margin-top:36px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.note p{font-size:16px;line-height:1.55}
+.note .who{font-size:13px;color:var(--muted);margin-top:10px;font-weight:500}
+.hint{margin-top:44px;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.hint svg{animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+.num{font-family:Newsreader,Georgia,serif;font-size:15px;color:var(--accent);font-weight:600;margin-bottom:14px}
+.pg h2{font-family:Newsreader,Georgia,serif;font-weight:600;font-size:clamp(29px,8vw,38px);line-height:1.12}
+.pg .body p{font-size:17px;line-height:1.6;margin-top:16px}
+.verse{margin-top:28px;border-left:3px solid var(--accent);padding:4px 0 4px 18px}
+.verse q{display:block;font-family:Newsreader,Georgia,serif;font-size:22px;line-height:1.42;quotes:none}
+.verse cite{display:block;font-style:normal;font-size:13px;color:var(--muted);margin-top:10px;font-weight:500;letter-spacing:.02em}
+.prayer{margin-top:24px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.prayer .lbl{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px}
+.prayer p{font-family:Newsreader,Georgia,serif;font-style:italic;font-size:20px;line-height:1.5}
+.acts{display:flex;flex-direction:column;gap:10px;margin-top:28px}
+.act{display:flex;align-items:center;justify-content:center;gap:8px;padding:15px 18px;border-radius:14px;font-weight:600;font-size:16px;text-decoration:none;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.act.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.church{margin-top:22px;font-size:15px;line-height:1.5;color:var(--muted)}
+.church b{color:var(--ink);font-weight:600;display:block}
+.fine{margin-top:40px;font-size:11.5px;line-height:1.5;color:var(--muted)}
+.fine a{color:var(--muted)}
+
+/* ---------- BUILDER ---------- */
+#app{display:none;min-height:100%}
+.top{position:sticky;top:0;z-index:10;background:rgba(243,242,239,.92);backdrop-filter:blur(10px);border-bottom:1px solid #e3e1db;
+  padding:calc(12px + env(safe-area-inset-top)) 18px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-family:Newsreader,Georgia,serif;font-size:24px;font-weight:600;letter-spacing:-.01em}
+.brand span{color:#a4542f}
+.seg{display:flex;background:#e6e4de;border-radius:10px;padding:3px}
+.seg button{border:0;background:none;padding:7px 13px;border-radius:8px;font-size:14px;font-weight:500;color:#5d5a52;cursor:pointer}
+.seg button.on{background:#fff;color:#1d1d1b;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 18px 80px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.col-edit,.col-send,.col-prev,.panel{min-width:0}
+.col-edit,.col-send{display:flex;flex-direction:column;gap:18px}
+.panel{background:#fff;border:1px solid #e6e3dc;border-radius:16px;padding:18px}
+.panel h3{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#7a766c;font-weight:600;margin-bottom:14px}
+label{display:block;font-size:13px;font-weight:500;color:#55524a;margin:12px 0 6px}
+label:first-of-type{margin-top:0}
+input[type=text],input[type=tel],input[type=url],textarea{width:100%;border:1px solid #dedad1;border-radius:10px;padding:11px 12px;background:#fcfbf9;font-size:15px;outline:none}
+input:focus,textarea:focus{border-color:#a4542f;background:#fff}
+textarea{resize:vertical;min-height:72px;line-height:1.45}
+.small{font-size:12.5px;color:#8a867c;margin-top:6px;line-height:1.45}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid #dedad1;background:#fcfbf9;border-radius:999px;padding:8px 14px;font-size:14px;cursor:pointer}
+.chip.on{background:#1d1d1b;color:#fff;border-color:#1d1d1b}
+.themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:10px}
+.sw{background:none;border:2px solid transparent;border-radius:12px;padding:10px 6px 8px;cursor:pointer;text-align:center;font-size:12.5px;font-weight:500}
+.sw.on{border-color:#1d1d1b}
+.sw i{display:block;height:34px;border-radius:8px;margin-bottom:6px;position:relative}
+.sw i::after{content:"";position:absolute;right:7px;bottom:7px;width:12px;height:12px;border-radius:50%;background:var(--a)}
+.pgcard{border:1px solid #e6e3dc;border-radius:12px;margin-top:12px;overflow:hidden}
+.pgcard summary{list-style:none;display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;background:#faf9f6}
+.pgcard summary::-webkit-details-marker{display:none}
+.pgcard summary .n{font-family:Newsreader,Georgia,serif;color:#a4542f;font-weight:600;width:18px}
+.pgcard summary .t{flex:1;font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pgcard .in{padding:4px 14px 14px}
+.icon-btn{border:0;background:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;cursor:pointer;color:#6b675e}
+.icon-btn:hover{background:#eeece6}
+.row2{display:grid;grid-template-columns:1fr;gap:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #dedad1;background:#fff;border-radius:12px;padding:12px 16px;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;color:#1d1d1b}
+.btn.dark{background:#1d1d1b;color:#fff;border-color:#1d1d1b}
+.btn.accent{background:#a4542f;color:#fff;border-color:#a4542f}
+.btn.full{width:100%}
+.btns{display:grid;gap:10px;margin-top:14px}
+.linkbox{font-family:ui-monospace,Menlo,monospace;font-size:12px;word-break:break-all;background:#f6f5f1;border:1px dashed #d8d4ca;border-radius:10px;padding:10px 12px;color:#5d5a52;max-height:84px;overflow:auto}
+.meta{display:flex;justify-content:space-between;font-size:12.5px;color:#8a867c;margin-top:8px}
+.warn{background:#fbf1e6;border:1px solid #efd6bb;color:#7a4a22;border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.5}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:#1d1d1b;color:#fff;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:.2s;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.phone{width:100%;max-width:380px;margin:0 auto;height:min(760px,calc(100dvh - 120px));border-radius:38px;border:10px solid #1d1d1b;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.15);background:#000}
+.phone .pg{padding-top:56px;padding-bottom:56px}
+.col-prev{position:sticky;top:84px;align-self:start}
+.prevlbl{text-align:center;font-size:12.5px;color:#8a867c;margin-top:12px}
+
+/* mobile: one pane at a time */
+@media (max-width:899px){
+  .wrap[data-tab=edit] .col-prev,.wrap[data-tab=edit] .col-send{display:none}
+  .wrap[data-tab=preview] .col-edit,.wrap[data-tab=preview] .col-send{display:none}
+  .wrap[data-tab=send] .col-edit,.wrap[data-tab=send] .col-prev{display:none}
+  .col-prev{position:static}
+  .phone{height:calc(100dvh - 150px);border-width:8px;border-radius:30px}
+}
+@media (min-width:900px){
+  .seg{display:none}
+  .wrap{grid-template-columns:minmax(0,1fr) 400px;grid-template-areas:"edit prev" "send prev" "foot foot"}
+  .credit{grid-area:foot}
+  .col-edit{grid-area:edit}.col-send{grid-area:send}.col-prev{grid-area:prev}
+}
+#viewer{height:100%;display:none}
+
+/* ---------- tract styles ---------- */
+.st-modern h1,.st-modern h2{font-family:Inter,system-ui,sans-serif;font-weight:600;letter-spacing:-.025em}
+.st-modern .cover h1{font-size:clamp(38px,11vw,56px);line-height:1.02}
+.st-modern .cover .sub{font-family:Inter,system-ui,sans-serif;font-size:19px;line-height:1.5}
+.st-modern .num{font-family:Inter,system-ui,sans-serif;font-size:56px;line-height:1;letter-spacing:-.04em;margin-bottom:18px}
+.st-modern .verse{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:18px 20px}
+.st-modern .verse q{font-family:Inter,system-ui,sans-serif;font-size:18px;font-weight:500;line-height:1.5}
+.st-modern .prayer p{font-family:Inter,system-ui,sans-serif;font-style:normal;font-size:17px;line-height:1.55}
+
+.st-centered .pg{text-align:center;align-items:center}
+.st-centered .pg>*{width:100%}
+.st-centered .verse{border-left:0;padding:0}
+.st-centered .verse::before{content:"";display:block;width:36px;height:2px;background:var(--accent);margin:0 auto 20px}
+.st-centered .hint{justify-content:center}
+.st-centered .num::before,.st-centered .num::after{content:"";display:inline-block;width:18px;height:1px;background:var(--accent);vertical-align:middle;margin:0 10px;opacity:.6}
+
+.st-bold .pg.cover,.st-bold .pg.resp{background:var(--accent);color:var(--bg)}
+.st-bold .cover h1{font-size:clamp(44px,13vw,68px);line-height:1}
+.st-bold h2{font-size:clamp(32px,9vw,44px)}
+.st-bold .num{font-size:20px}
+.st-bold .cover .eyebrow,.st-bold .resp .eyebrow,.st-bold .cover .sub,.st-bold .hint,.st-bold .resp .verse cite,.st-bold .note .who,.st-bold .prayer .lbl,
+.st-bold .resp .fine,.st-bold .resp .fine a,.st-bold .resp .church,.st-bold .resp .church b{color:var(--bg);opacity:.82}
+.st-bold .resp .verse{border-color:var(--bg)}
+.st-bold .cover .note,.st-bold .resp .note,.st-bold .resp .prayer{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.25);color:var(--bg)}
+.st-bold .resp .act{background:transparent;border-color:rgba(255,255,255,.45);color:var(--bg)}
+.st-bold .resp .act.primary{background:var(--bg);border-color:var(--bg);color:var(--accent)}
+.st-bold .bar{background:var(--ink)}
+.st-bold .pg:not(.cover):not(.resp) .verse{border-left-width:5px}
+
+/* ---------- animations ---------- */
+.tract .rv{transition:opacity var(--dur,0s) ease,transform var(--dur,0s) cubic-bezier(.2,.7,.2,1),filter var(--dur,0s) ease;transition-delay:calc(var(--i,0)*var(--stag,0s))}
+.mo-gentle{--dur:.7s;--stag:.09s}
+.mo-gentle .pg:not(.in) .rv{opacity:0;transform:translateY(16px)}
+.mo-reveal{--dur:1.1s;--stag:.28s}
+.mo-reveal .pg:not(.in) .rv{opacity:0;transform:translateY(6px);filter:blur(8px)}
+.mo-sunrise{--dur:.95s;--stag:.13s}
+.mo-sunrise .pg:not(.in) .rv{opacity:0;transform:translateY(26px) scale(.985)}
+.tract .glow{position:absolute;left:-20%;right:-20%;bottom:-45%;height:90%;border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(closest-side,var(--accent),transparent);opacity:0;transform:translateY(30%);transition:opacity 2.6s ease,transform 3.2s cubic-bezier(.2,.7,.2,1)}
+.tract.ready .glow{opacity:.22;transform:none}
+.tract .scroller{position:relative;z-index:1}
+.st-bold .glow{display:none}
+.tract.still .rv,.tract.still .glow{transition:none!important}
+@media (prefers-reduced-motion:reduce){
+  .tract .rv{transition:none!important;opacity:1!important;transform:none!important;filter:none!important}
+  .tract .glow{display:none}
+  .hint svg{animation:none}
+}
+.opt-label{font-size:13px;font-weight:500;color:#55524a;margin:16px 0 8px}
+.opt-label:first-of-type{margin-top:0}
+.replay{display:block;margin:10px auto 0;border:0;background:none;color:#a4542f;font-weight:600;font-size:13.5px;cursor:pointer}
+.credit{grid-column:1/-1;text-align:center;font-size:12.5px;line-height:1.55;color:#8a867c;padding-top:8px;display:grid;gap:4px;max-width:620px;margin:0 auto}
+.credit b{color:#55524a}
+.qrbox{background:#fff;border:1px solid #e6e3dc;border-radius:12px;padding:16px;display:grid;place-items:center;margin-top:12px}
+.qrbox svg{width:100%;max-width:260px;height:auto;display:block}
+</style>
+</head>
+<body>
+
+<div id="viewer"></div>
+
+<div id="app">
+  <header class="top">
+    <div class="brand">Sent<span>.</span></div>
+    <div class="seg" id="seg">
+      <button data-t="edit" class="on">Edit</button>
+      <button data-t="preview">Preview</button>
+      <button data-t="send">Send</button>
+    </div>
+  </header>
+
+  <main class="wrap" id="wrap" data-tab="edit">
+    <section class="col-edit">
+      <div class="panel">
+        <h3>Start from</h3>
+        <div class="chips" id="tplChips"></div>
+        <p class="small">Templates and church library tracts send as short links. Editing the wording makes a custom tract, which makes the link longer but still works.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Cover</h3>
+        <label>Title</label>
+        <input type="text" data-k="title" maxlength="80">
+        <label>Subtitle</label>
+        <textarea data-k="subtitle" rows="2" maxlength="200"></textarea>
+      </div>
+
+      <div class="panel">
+        <h3>Pages</h3>
+        <div id="pages"></div>
+        <div class="btns"><button class="btn" id="addPage">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add a page</button></div>
+      </div>
+
+      <div class="panel">
+        <h3>Response page</h3>
+        <label>Heading</label>
+        <input type="text" data-k="resp.h" maxlength="80">
+        <label>Message</label>
+        <textarea data-k="resp.b" rows="3"></textarea>
+        <label>Verse reference</label>
+        <input type="text" data-k="resp.ref" placeholder="Romans 10:13">
+        <label>Verse text</label>
+        <textarea data-k="resp.v" rows="2"></textarea>
+        <label>Suggested prayer <span style="color:#a19c90;font-weight:400">(optional)</span></label>
+        <textarea data-k="resp.pr" rows="3"></textarea>
+      </div>
+
+      <div class="panel">
+        <h3>From you</h3>
+        <label>Your first name <span style="color:#a19c90;font-weight:400">(optional)</span></label>
+        <input type="text" data-k="from.n" maxlength="40" placeholder="Your first name">
+        <label>Personal note on the cover <span style="color:#a19c90;font-weight:400">(optional)</span></label>
+        <textarea data-k="from.o" rows="2" maxlength="280" placeholder="A sentence or two in your own words"></textarea>
+        <label>Your phone number for text-back buttons <span style="color:#a19c90;font-weight:400">(optional)</span></label>
+        <input type="tel" data-k="from.p" placeholder="Your mobile number">
+        <p class="small">Adds "I prayed this" and "Text me" buttons that text you directly. Your number is stored inside the link, so anyone the tract is forwarded to could see it. Leave this blank to keep your number private.</p>
+        <label>Church name <span style="color:#a19c90;font-weight:400">(optional)</span></label>
+        <input type="text" data-k="from.c" placeholder="Your church">
+        <label>Service times or address</label>
+        <input type="text" data-k="from.ci" placeholder="Sunday service times">
+        <label>Church website</label>
+        <input type="text" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" data-k="from.cw" placeholder="yourchurch.org">
+        <p class="small">Everything here is optional and travels only inside the link you send. Nothing is collected or stored on a server.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Look</h3>
+        <div class="opt-label">Colors</div>
+        <div class="themes" id="themes"></div>
+        <div class="opt-label">Style</div>
+        <div class="chips" id="styles"></div>
+        <div class="opt-label">Animation</div>
+        <div class="chips" id="motions"></div>
+        <p class="small">Animations are gentle and turn off automatically for people who've asked their phone to reduce motion.</p>
+      </div>
+    </section>
+
+    <section class="col-send">
+      <div class="panel">
+        <h3>Send it</h3>
+        <div class="warn" id="hostWarn" style="display:none;margin-bottom:14px">This copy isn't running on your public site, so links made here won't open for others. Put your site's address below (for example your GitHub Pages address).</div>
+        <label>Text message</label>
+        <textarea id="msg" rows="3"></textarea>
+        <label>Link</label>
+        <div class="linkbox" id="link">…</div>
+        <div class="meta"><span id="linkKind"></span><span id="linkLen"></span></div>
+        <div class="btns">
+          <a class="btn accent full" id="smsBtn" href="#">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Send as text</a>
+          <button class="btn dark full" id="shareBtn" style="display:none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Share…</button>
+          <button class="btn full" id="copyBtn">Copy message and link</button>
+          <a class="btn full" id="openBtn" href="#" target="_blank" rel="noopener">Open as the recipient sees it</a>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>QR code</h3>
+        <p class="small" style="margin-top:0">For printed cards, bulletins, or showing someone your screen. It opens the same tract as the link.</p>
+        <div class="qrbox" id="qrbox"></div>
+        <div class="meta"><span id="qrInfo"></span></div>
+        <div class="warn" id="qrWarn" style="display:none;margin-top:10px">This is a custom tract, so the code is dense. Print it at least 2 inches wide, or use a template unedited for a simpler code.</div>
+        <div class="btns">
+          <button class="btn dark full" id="qrCard">Download printable card</button>
+          <button class="btn full" id="qrPng">Download QR code only</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Church library</h3>
+        <p class="small" style="margin-top:0">To give a tract you wrote its own short link, add it to the church library. Copy the entry below, paste it into <b>library.js</b> in the GitHub repo, and commit. After a minute it appears under "Start from" with a short link.</p>
+        <label>Short link name</label>
+        <input type="text" id="libId" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="easter-hope">
+        <p class="small" id="libIdNote">Lowercase letters, numbers and hyphens. Keep it once you start sharing it.</p>
+        <div class="btns"><button class="btn full" id="libCopy">Copy library entry</button></div>
+      </div>
+      <div class="panel">
+        <h3>Your site</h3>
+        <label>Site address</label>
+        <input type="url" id="site" placeholder="https://yourname.github.io/sent/">
+        <p class="small">Leave blank to use this page's own address. Links you send open here.</p>
+        <div class="btns"><button class="btn full" id="resetBtn">Reset to template</button></div>
+      </div>
+    </section>
+
+    <aside class="col-prev">
+      <div class="phone"><div id="preview" style="height:100%"></div></div>
+      <p class="prevlbl">Live preview. Scroll inside the phone.</p>
+      <button class="replay" id="replay">Replay animation</button>
+    </aside>
+    <footer class="credit">
+      <p><b>Sent</b> is developed by Keyport Bible Church in Keyport, WA. <span style="opacity:.7">Version 1.8</span></p>
+      <p>Privacy: Sent has no accounts, tracking, or analytics, and loads nothing from other companies. Each tract lives only inside its own link. Drafts are saved on this device only.</p>
+    </footer>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* qrcode-generator 1.4.4 · (c) Kazuhiko Arase · MIT License */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1})},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}(function(){return qrcode});
+</script>
+<script src="library.js?v=1.8"></script>
+<script>
+(function(){
+"use strict";
+
+/* ===== Scripture: Berean Standard Bible (public domain) ===== */
+const TEMPLATES = {
+  "good-news": {
+    name:"The Good News",
+    title:"The Best News You'll Hear Today",
+    subtitle:"Five short truths about God, about you, and about a gift that's yours to receive.",
+    pages:[
+      {h:"God made you, and He loves you",b:"You are not an accident. The God who made the stars knows your name, and He wants you to know Him.",ref:"John 3:16",v:"For God so loved the world that He gave His one and only Son, that everyone who believes in Him shall not perish but have eternal life."},
+      {h:"Something is broken",b:"We can all feel that the world isn't the way it should be. If we're honest, neither are we. The Bible calls this sin: going our own way instead of God's.",ref:"Romans 3:23",v:"for all have sinned and fall short of the glory of God,"},
+      {h:"Sin has a cost",b:"Sin isn't just a few bad choices. It separates us from God, the source of life, and we can't fix that on our own.",ref:"Romans 6:23",v:"For the wages of sin is death, but the gift of God is eternal life in Christ Jesus our Lord."},
+      {h:"God paid it Himself",b:"Jesus, God's Son, lived the life we couldn't, died in our place, and rose from the dead. He didn't wait for us to get our act together first.",ref:"Romans 5:8",v:"But God proves His love for us in this: While we were still sinners, Christ died for us."},
+      {h:"A gift to receive",b:"You can't earn it and you don't have to. A gift is simply received. You receive this one by trusting Jesus.",ref:"Ephesians 2:8–9",v:"For it is by grace you have been saved through faith, and this not from yourselves; it is the gift of God, not by works, so that no one can boast."}
+    ],
+    resp:{h:"What now?",b:"If you're ready, you can talk to God right now. There are no magic words. He looks at the heart.",ref:"Romans 10:13",v:"for, “Everyone who calls on the name of the Lord will be saved.”",pr:"Jesus, I know I've gone my own way. Thank You for dying for me and rising again. I trust You as my Lord and Savior. Make me new. Amen."}
+  },
+  "hope": {
+    name:"Hope for the Hurting",
+    title:"When Life Is Heavy",
+    subtitle:"A few words of hope, for whatever you're carrying right now.",
+    pages:[
+      {h:"You're not alone in this",b:"Pain has a way of making us feel invisible. But God sees you, right here, right now, and He draws close to people who are hurting.",ref:"Psalm 34:18",v:"The LORD is near to the brokenhearted; He saves the contrite in spirit."},
+      {h:"An open invitation",b:"Jesus never told tired people to try harder. He invited them to come to Him, just as they were.",ref:"Matthew 11:28",v:"Come to Me, all you who are weary and burdened, and I will give you rest."},
+      {h:"Loved at your lowest",b:"God's love doesn't depend on you having it all together. He loved us at our worst and proved it on the cross.",ref:"Romans 5:8",v:"But God proves His love for us in this: While we were still sinners, Christ died for us."},
+      {h:"A new beginning is possible",b:"Whatever has happened, it doesn't have to be the end of your story. In Jesus, God makes people new.",ref:"2 Corinthians 5:17",v:"Therefore if anyone is in Christ, he is a new creation. The old has passed away. Behold, the new has come!"}
+    ],
+    resp:{h:"He's knocking",b:"Jesus doesn't force His way in. He offers Himself and waits for you to open the door.",ref:"Revelation 3:20",v:"Behold, I stand at the door and knock. If anyone hears My voice and opens the door, I will come in and dine with him, and he with Me.",pr:"Jesus, I'm tired and I need You. Thank You for loving me and dying for me. I open the door. Come into my life and be my Lord. Amen."}
+  },
+  "who-is-jesus": {
+    name:"Who Is Jesus?",
+    title:"Who Is Jesus?",
+    subtitle:"The most important question you'll ever answer, in four short pages.",
+    pages:[
+      {h:"He claimed to be the way",b:"Jesus didn't present Himself as one good teacher among many. He made a claim no one else has made.",ref:"John 14:6",v:"Jesus answered, “I am the way and the truth and the life. No one comes to the Father except through Me."},
+      {h:"He died and rose again",b:"The heart of the Christian faith is an event in history: Jesus died for our sins, and on the third day He rose from the dead.",ref:"1 Corinthians 15:3–4",v:"that Christ died for our sins according to the Scriptures, that He was buried, that He was raised on the third day according to the Scriptures,"},
+      {h:"He makes us family",b:"Jesus doesn't just forgive. He brings anyone who trusts Him into God's family, as a son or daughter.",ref:"John 1:12",v:"But to all who did receive Him, to those who believed in His name, He gave the right to become children of God—"},
+      {h:"He makes us clean",b:"No matter what's in your past, there's no sin too big for His forgiveness when you come to Him honestly.",ref:"1 John 1:9",v:"If we confess our sins, He is faithful and just to forgive us our sins and to cleanse us from all unrighteousness."}
+    ],
+    resp:{h:"What will you do with Jesus?",b:"Everyone eventually answers this question, one way or another. You can answer it today.",ref:"Romans 10:9",v:"that if you confess with your mouth, “Jesus is Lord,” and believe in your heart that God raised Him from the dead, you will be saved.",pr:"Jesus, I believe You are who You said You are. I believe You died for my sins and rose again. I confess You as my Lord. Amen."}
+  },
+  "blank": {
+    name:"Blank",
+    title:"",subtitle:"",
+    pages:[{h:"",b:"",ref:"",v:""}],
+    resp:{h:"",b:"",ref:"",v:"",pr:""}
+  }
+};
+
+const THEMES = {
+  dawn:  {name:"Dawn",  bg:"#f6f1e8",ink:"#23201b",muted:"#6f665a",accent:"#a4542f",card:"#fffaf2",line:"#e4dacb"},
+  harbor:{name:"Harbor",bg:"#e9eef1",ink:"#17262f",muted:"#5b6d78",accent:"#2f6f8f",card:"#f7fafb",line:"#d3dde2"},
+  sage:  {name:"Sage",  bg:"#eef0e8",ink:"#1f2a1f",muted:"#5f6b5c",accent:"#5b7a4a",card:"#f8f9f4",line:"#d9ddcf"},
+  night: {name:"Night", bg:"#121722",ink:"#eef0f4",muted:"#9aa3b5",accent:"#d9b26b",card:"#1b2232",line:"#2a3346"},
+  plum:  {name:"Plum",  bg:"#f3eef2",ink:"#2a1f29",muted:"#6e5f6c",accent:"#7b3f6e",card:"#fbf8fa",line:"#e2d7e0"},
+  sand:  {name:"Sand",  bg:"#f4ecdc",ink:"#2b2317",muted:"#75684f",accent:"#9a6a1f",card:"#fbf6ec",line:"#e5d9bf"},
+  mono:  {name:"Paper", bg:"#fafafa",ink:"#111111",muted:"#666666",accent:"#111111",card:"#ffffff",line:"#e3e3e3"},
+  ocean: {name:"Ocean", bg:"#0f2a33",ink:"#e8f1f3",muted:"#94b0b8",accent:"#6cc3c7",card:"#163843",line:"#24505d"},
+  ember: {name:"Ember", bg:"#1c1512",ink:"#f3ebe4",muted:"#b3a296",accent:"#e0784a",card:"#271d19",line:"#3a2c25"}
+};
+
+const STYLES = {classic:{name:"Classic",c:"c"},modern:{name:"Modern",c:"m"},centered:{name:"Centered",c:"x"},bold:{name:"Bold",c:"b"}};
+const MOTIONS = {gentle:{name:"Gentle",c:"g"},reveal:{name:"Reveal",c:"r"},sunrise:{name:"Sunrise",c:"s"},none:{name:"None",c:"n"}};
+
+/* ===== church library (library.js) ===== */
+const LIBRARY_IDS=[];
+(function(){
+  const lib=Array.isArray(window.SENT_LIBRARY)?window.SENT_LIBRARY:[];
+  const s=(v,m)=>typeof v==="string"?v.slice(0,m||2000):"";
+  lib.forEach(t=>{
+    const id=s(t&&t.id,40).toLowerCase();
+    if(!/^[a-z0-9][a-z0-9-]{1,39}$/.test(id) || TEMPLATES[id] || ["gn","hh","wj","t"].includes(id)) return;
+    const r=t.response||{};
+    TEMPLATES[id]={lib:true,name:s(t.name,40)||s(t.title,40)||id,title:s(t.title,120),subtitle:s(t.subtitle,300),
+      pages:(Array.isArray(t.pages)?t.pages:[]).slice(0,20).map(p=>({h:s(p.heading,120),b:s(p.message),ref:s(p.ref,60),v:s(p.verse,800)})),
+      resp:{h:s(r.heading,120),b:s(r.message),ref:s(r.ref,60),v:s(r.verse,800),pr:s(r.prayer,800)}};
+    if(!TEMPLATES[id].pages.length) TEMPLATES[id].pages=[{h:"",b:"",ref:"",v:""}];
+    LIBRARY_IDS.push(id);
+  });
+  const b=TEMPLATES.blank; delete TEMPLATES.blank; TEMPLATES.blank=b; // keep Blank last
+})();
+
+/* ===== helpers ===== */
+const $ = s => document.querySelector(s);
+const el = (tag, cls, text) => { const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; };
+const clone = o => JSON.parse(JSON.stringify(o));
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+function b64u(bytes){ let s=""; for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null, bytes.subarray(i,i+0x8000)); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+function unb64u(str){ str=str.replace(/-/g,"+").replace(/_/g,"/"); while(str.length%4) str+="="; const bin=atob(str); const out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out; }
+async function encode(obj){
+  const bytes=new TextEncoder().encode(JSON.stringify(obj));
+  if("CompressionStream" in window){
+    try{ const buf=await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer(); return "z"+b64u(new Uint8Array(buf)); }catch(e){}
+  }
+  return "j"+b64u(bytes);
+}
+async function decode(code){
+  const kind=code[0], bytes=unb64u(code.slice(1));
+  let text;
+  if(kind==="z"){ text=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).text(); }
+  else text=new TextDecoder().decode(bytes);
+  return JSON.parse(text);
+}
+const cleanPhone = p => (p||"").replace(/[^\d+]/g,"").slice(0,16);
+const safeUrl = u => { try{ const x=new URL(u); return /^https?:$/.test(x.protocol)?x.href:""; }catch(e){ return ""; } };
+const normUrl = u => { u=(u||"").trim(); if(!u) return ""; if(!/^[a-z][a-z0-9+.-]*:\/\//i.test(u)) u="https://"+u.replace(/^\/+/,""); return safeUrl(u); };
+const str = (v,max) => typeof v==="string" ? v.slice(0,max||2000) : "";
+
+/* ===== tract model ===== */
+function contentOf(t){ return {title:t.title,subtitle:t.subtitle,pages:t.pages,resp:t.resp}; }
+function draftFromTemplate(id, keepFrom){
+  if(!TEMPLATES[id]) id="good-news";
+  const t=clone(TEMPLATES[id]);
+  return {tpl:id,title:t.title,subtitle:t.subtitle,pages:t.pages,resp:t.resp,
+    from:keepFrom||{n:"",o:"",p:"",c:"",ci:"",cw:""},theme:(state&&state.theme)||"dawn",style:(state&&state.style)||"classic",motion:(state&&state.motion)||"gentle"};
+}
+function toPayload(d){
+  const f={}; for(const k of ["n","o","p","c","ci","cw"]){ const v=k==="cw"?normUrl(d.from[k]):k==="p"?cleanPhone(d.from[k]):d.from[k]; if(v) f[k]=v; }
+  const p={v:1,th:d.theme};
+  if(d.style && d.style!=="classic") p.st=d.style;
+  if(d.motion && d.motion!=="gentle") p.mo=d.motion;
+  if(Object.keys(f).length) p.f=f;
+  const tpl=TEMPLATES[d.tpl];
+  if(tpl && d.tpl!=="blank" && JSON.stringify(contentOf(d))===JSON.stringify(contentOf(tpl))) p.t=d.tpl;
+  else p.c={ti:d.title,su:d.subtitle,pg:d.pages.map(x=>[x.h,x.b,x.ref,x.v]),r:[d.resp.h,d.resp.b,d.resp.ref,d.resp.v,d.resp.pr]};
+  return p;
+}
+function fromPayload(p){
+  let base;
+  if(p.t && TEMPLATES[p.t]) base=clone(TEMPLATES[p.t]);
+  else{
+    const c=p.c||{}, r=Array.isArray(c.r)?c.r:[];
+    base={title:str(c.ti,120),subtitle:str(c.su,300),
+      pages:(Array.isArray(c.pg)?c.pg:[]).slice(0,20).map(a=>({h:str(a[0],120),b:str(a[1]),ref:str(a[2],60),v:str(a[3],800)})),
+      resp:{h:str(r[0],120),b:str(r[1]),ref:str(r[2],60),v:str(r[3],800),pr:str(r[4],800)}};
+  }
+  const f=p.f||{};
+  base.from={n:str(f.n,40),o:str(f.o,300),p:cleanPhone(str(f.p,20)),c:str(f.c,80),ci:str(f.ci,120),cw:normUrl(str(f.cw,300))};
+  base.theme=THEMES[p.th]?p.th:"dawn";
+  base.style=STYLES[p.st]?p.st:"classic";
+  base.motion=MOTIONS[p.mo]?p.mo:"gentle";
+  return base;
+}
+
+/* ===== render a tract ===== */
+const chevron='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>';
+function paras(parent, text){
+  const box=el("div","body");
+  (text||"").split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean).forEach(s=>box.appendChild(el("p",null,s)));
+  parent.appendChild(box);
+}
+function verse(parent, ref, v){
+  if(!v && !ref) return;
+  const b=el("blockquote","verse");
+  if(v) b.appendChild(el("q",null,v));
+  if(ref) b.appendChild(el("cite",null,ref+" · BSB"));
+  parent.appendChild(b);
+}
+function renderTract(root, d, opts){
+  opts=opts||{};
+  const th=THEMES[d.theme]||THEMES.dawn;
+  root.innerHTML="";
+  const style=STYLES[d.style]?d.style:"classic", motion=MOTIONS[d.motion]?d.motion:"gentle";
+  const animate=opts.animate!==false;
+  const t=el("div","tract st-"+style+" mo-"+motion+(animate?"":" still"));
+  for(const k of ["bg","ink","muted","accent","card","line"]) t.style.setProperty("--"+k, th[k]);
+  const bar=el("div","bar"); t.appendChild(bar);
+  if(motion==="sunrise") t.appendChild(el("div","glow"));
+  const sc=el("div","scroller"); t.appendChild(sc);
+  const from=Object.assign({},d.from||{}); from.cw=normUrl(from.cw); from.p=cleanPhone(from.p); if(from.p.replace(/\D/g,"").length<7) from.p="";
+
+  // cover
+  const cv=el("section","pg cover");
+  cv.appendChild(el("div","eyebrow", from.n ? "A message from "+from.n : "A message for you"));
+  cv.appendChild(el("h1",null,d.title||"Untitled"));
+  if(d.subtitle) cv.appendChild(el("p","sub",d.subtitle));
+  if(from.o){ const n=el("div","note"); n.appendChild(el("p",null,from.o)); if(from.n) n.appendChild(el("div","who","— "+from.n)); cv.appendChild(n); }
+  const hint=el("div","hint"); hint.innerHTML=chevron; hint.appendChild(document.createTextNode("Scroll to read · about 2 minutes")); cv.appendChild(hint);
+  sc.appendChild(cv);
+
+  // pages
+  d.pages.forEach((p,i)=>{
+    const s=el("section","pg");
+    s.appendChild(el("div","num",String(i+1).padStart(2,"0")));
+    if(p.h) s.appendChild(el("h2",null,p.h));
+    paras(s,p.b); verse(s,p.ref,p.v);
+    sc.appendChild(s);
+  });
+
+  // response
+  const r=d.resp||{};
+  const rs=el("section","pg resp");
+  rs.appendChild(el("div","eyebrow","Your response"));
+  if(r.h) rs.appendChild(el("h2",null,r.h));
+  paras(rs,r.b); verse(rs,r.ref,r.v);
+  if(r.pr){ const pb=el("div","prayer"); pb.appendChild(el("div","lbl","A prayer you could pray")); pb.appendChild(el("p",null,r.pr)); rs.appendChild(pb); }
+  const acts=el("div","acts");
+  if(from.p){
+    const hi="Hi"+(from.n?" "+from.n:"")+", ";
+    const acts=el("div","acts");
+    const a1=el("a","act primary","I prayed this");
+    a1.href="sms:"+from.p+"?&body="+encodeURIComponent(hi+"I read what you sent me and I prayed that prayer.");
+    const a2=el("a","act",from.n?"Text "+from.n:"Text back");
+    a2.href="sms:"+from.p+"?&body="+encodeURIComponent(hi);
+    acts.appendChild(a1); acts.appendChild(a2);
+    rs.appendChild(acts);
+  } else {
+    const reply=el("div","note");
+    reply.appendChild(el("p",null,"Prayed that prayer, or have a question? Just reply to the text this came in"+(from.n?" and let "+from.n+" know.":".")));
+    rs.appendChild(reply);
+  }
+  if(from.cw){ const a=el("a","act","Visit "+(from.c||"our church")); a.href=from.cw; a.target="_blank"; a.rel="noopener"; acts.appendChild(a); }
+  if(acts.children.length) rs.appendChild(acts);
+  if((from.c && !from.cw) || from.ci){ const c=el("div","church"); if(from.c) c.appendChild(el("b",null,from.c)); if(from.ci) c.appendChild(document.createTextNode(from.ci)); rs.appendChild(c); }
+  const fine=el("p","fine","Sent is developed by Keyport Bible Church in Keyport, WA. Scripture quotations are from the Berean Standard Bible (BSB), public domain.");
+  if(opts.makeOwnUrl){ fine.appendChild(document.createElement("br")); const a=el("a",null,"Make one to send to someone else"); a.href=opts.makeOwnUrl; fine.appendChild(a); }
+  rs.appendChild(fine);
+  sc.appendChild(rs);
+
+  // entrance animation
+  const secs=[...sc.querySelectorAll(".pg")];
+  secs.forEach(sec=>[...sec.children].forEach((c,i)=>{ c.classList.add("rv"); c.style.setProperty("--i",i); }));
+  if(!animate || motion==="none" || !("IntersectionObserver" in window)){
+    secs.forEach(x=>x.classList.add("in"));
+    if(!animate) requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.remove("still")));
+  } else {
+    const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }),{root:sc,threshold:.2});
+    secs.forEach(x=>io.observe(x));
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ secs[0].classList.add("in"); t.classList.add("ready"); }));
+  }
+  sc.addEventListener("scroll",()=>{ const m=sc.scrollHeight-sc.clientHeight; bar.style.width=(m>0?sc.scrollTop/m*100:0)+"%"; },{passive:true});
+  root.appendChild(t);
+  return {theme:th};
+}
+
+/* ===== SHORT LINKS =====
+   #gn            built-in template (gn, hh, wj) or a library id like #easter-hope
+   #gn.n          with a theme letter (d, h, s, n)
+   #gn.n~Sam      with the sender's first name
+   Anything else falls back to a packed link: #t=... */
+const TPL_CODES={"good-news":"gn","hope":"hh","who-is-jesus":"wj"};
+const THEME_CODES={dawn:"d",harbor:"h",sage:"s",night:"n",plum:"p",sand:"a",mono:"m",ocean:"o",ember:"e"};
+const STYLE_CODES=Object.fromEntries(Object.entries(STYLES).map(([k,v])=>[k,v.c]));
+const MOTION_CODES=Object.fromEntries(Object.entries(MOTIONS).map(([k,v])=>[k,v.c]));
+const inv=o=>Object.fromEntries(Object.entries(o).map(([k,v])=>[v,k]));
+const codeFor=id=>TPL_CODES[id]||(LIBRARY_IDS.includes(id)?id:null);
+function shortCode(p){
+  if(!p.t) return null;
+  const c0=codeFor(p.t); if(!c0) return null;
+  const f=p.f||{};
+  if(Object.keys(f).some(k=>k!=="n"&&k!=="p")) return null;
+  let c=c0;
+  let look=(THEME_CODES[p.th]||"d")+(STYLE_CODES[p.st]||"c")+(MOTION_CODES[p.mo]||"g");
+  look=look.replace(/g$/,"").replace(/c$/,"").replace(/^d$/,"");
+  if(look) c+="."+look;
+  if(f.n) c+="~"+encodeURIComponent(f.n.trim()).replace(/%20/g,"_");
+  if(f.p) c+="!"+f.p.replace(/[^\d+]/g,"");
+  return c;
+}
+function parseShort(h){
+  const m=h.match(/^#([a-z0-9][a-z0-9-]{1,39})(?:[.]([a-z]{1,3}))?(?:~([^!]{1,160}))?(?:!(\+?\d{7,15}))?$/); if(!m) return null;
+  let code=m[1], th=m[2];
+  let t=inv(TPL_CODES)[code]||(LIBRARY_IDS.includes(code)?code:null);
+  if(!t){ const x=code.match(/^([a-z]{2})-([a-z])$/); if(x && inv(TPL_CODES)[x[1]]){ t=inv(TPL_CODES)[x[1]]; th=x[2]; } } // older #gn-n form
+  if(!t) return null;
+  const lk=th||"";
+  const p={v:1,t:t,th:inv(THEME_CODES)[lk[0]]||"dawn"};
+  const st=inv(STYLE_CODES)[lk[1]], mo=inv(MOTION_CODES)[lk[2]];
+  if(st && st!=="classic") p.st=st;
+  if(mo && mo!=="gentle") p.mo=mo;
+  if(m[3]){ let n=""; try{ n=decodeURIComponent(m[3].replace(/_/g,"%20")); }catch(e){} n=n.trim().slice(0,40); if(n) p.f={n:n}; }
+  if(m[4]){ p.f=p.f||{}; p.f.p=m[4]; }
+  return p;
+}
+function missingLibraryLink(h){ return /^#[a-z0-9][a-z0-9-]{1,39}(\.[a-z]{1,3})?(~[^!]*)?(!\+?\d+)?$/.test(h); }
+
+/* ===== VIEWER MODE ===== */
+function linkCode(){
+  const h=location.hash.match(/[#&]t=([A-Za-z0-9_-]+)/); if(h) return h[1];
+  const q=new URLSearchParams(location.search).get("t"); return q&&/^[A-Za-z0-9_-]+$/.test(q)?q:null;
+}
+let state=null;
+const code=linkCode();
+const shortP=code?null:parseShort(location.hash);
+if(!code && !shortP && missingLibraryLink(location.hash) && location.hash.length>3){
+  const v=$("#viewer"); v.style.display="block";
+  v.innerHTML='<div class="tract"><div class="scroller"><section class="pg"><h2>This tract isn\'t available</h2><div class="body"><p>It may have been renamed or removed. Ask the person who sent it for a new link.</p></div></section></div></div>';
+  return;
+}
+if(code||shortP){
+  const v=$("#viewer"); v.style.display="block"; document.body.style.background="#000";
+  (shortP?Promise.resolve(shortP):decode(code)).then(p=>{
+    const d=fromPayload(p);
+    const r=renderTract(v,d,{makeOwnUrl:location.origin+location.pathname});
+    document.body.style.background=r.theme.bg;
+    document.querySelector('meta[name=theme-color]').content=r.theme.bg;
+    document.title=d.title||"A message for you";
+  }).catch(()=>{
+    v.innerHTML='<div class="tract"><div class="scroller"><section class="pg"><h2>This link looks incomplete</h2><div class="body"><p>Part of the link may have been cut off when it was sent. Ask the person who sent it to send it again.</p></div></section></div></div>';
+  });
+  return;
+}
+
+/* ===== BUILDER MODE ===== */
+$("#app").style.display="block";
+state=store.get("sent.draft");
+if(!state||!state.pages){ state=draftFromTemplate("good-news"); }
+if(!STYLES[state.style]) state.style="classic";
+if(!MOTIONS[state.motion]) state.motion="gentle";
+if(!THEMES[state.theme]) state.theme="dawn";
+let settings=store.get("sent.settings")||{site:"",msg:""};
+const DEFAULT_MSG="Hey, I've been thinking about you and wanted to share something that means a lot to me. It's short:";
+
+function getPath(path){ return path.split(".").reduce((o,k)=>o==null?"":o[k], state); }
+function setPath(path,val){ const ks=path.split("."); let o=state; ks.slice(0,-1).forEach(k=>o=o[k]); o[ks[ks.length-1]]=val; }
+function save(){ store.set("sent.draft",state); }
+
+let prevTimer;
+let animNext=false;
+function changed(anim){ if(anim) animNext=true; save(); clearTimeout(prevTimer); prevTimer=setTimeout(()=>{ renderPreview(animNext); animNext=false; updateLink(); },180); }
+
+function bindFields(){
+  document.querySelectorAll("[data-k]").forEach(inp=>{
+    inp.value=getPath(inp.dataset.k)||"";
+    if(!inp._b){ inp._b=1; inp.addEventListener("input",()=>{ setPath(inp.dataset.k,inp.value); changed(); }); }
+  });
+}
+
+function renderChips(){
+  const box=$("#tplChips"); box.innerHTML="";
+  const matches=toPayload(state).t;
+  const chip=id=>{
+    const t=TEMPLATES[id];
+    const b=el("button","chip"+(id===state.tpl?" on":""), t.name+(id===state.tpl&&!matches&&id!=="blank"?" (edited)":""));
+    b.onclick=()=>{ if(id===state.tpl) return; state=draftFromTemplate(id, state.from); save(); fullRender(); };
+    return b;
+  };
+  const ids=Object.keys(TEMPLATES);
+  ids.filter(id=>!TEMPLATES[id].lib && id!=="blank").forEach(id=>box.appendChild(chip(id)));
+  box.appendChild(chip("blank"));
+  if(LIBRARY_IDS.length){
+    const lbl=el("div","small","Church library"); lbl.style.cssText="width:100%;margin:8px 0 0;font-weight:600;color:#7a766c";
+    box.appendChild(lbl);
+    LIBRARY_IDS.forEach(id=>box.appendChild(chip(id)));
+  }
+}
+
+const svgUp='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>';
+const svgDown='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>';
+const svgDel='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+
+function renderPages(openIdx){
+  const box=$("#pages"); box.innerHTML="";
+  state.pages.forEach((p,i)=>{
+    const d=el("details","pgcard"); if(i===openIdx) d.open=true;
+    const s=el("summary");
+    s.appendChild(el("span","n",String(i+1)));
+    const ttl=el("span","t",p.h||"Untitled page"); s.appendChild(ttl);
+    [[svgUp,"Move up",()=>move(i,-1),i===0],[svgDown,"Move down",()=>move(i,1),i===state.pages.length-1],[svgDel,"Delete",()=>del(i),state.pages.length<2]].forEach(([ic,lbl,fn,dis])=>{
+      const b=el("button","icon-btn"); b.innerHTML=ic; b.title=lbl; b.setAttribute("aria-label",lbl);
+      if(dis){ b.disabled=true; b.style.opacity=.3; }
+      b.onclick=e=>{ e.preventDefault(); e.stopPropagation(); fn(); };
+      s.appendChild(b);
+    });
+    d.appendChild(s);
+    const inr=el("div","in");
+    [["Heading","h","input"],["Message","b","textarea"],["Verse reference","ref","input"],["Verse text (BSB)","v","textarea"]].forEach(([lbl,k,tag])=>{
+      inr.appendChild(el("label",null,lbl));
+      const f=document.createElement(tag); if(tag==="input") f.type="text"; else f.rows=k==="b"?3:2;
+      f.value=p[k]||"";
+      f.addEventListener("input",()=>{ p[k]=f.value; if(k==="h") ttl.textContent=f.value||"Untitled page"; changed(); renderChipsSoon(); });
+      inr.appendChild(f);
+    });
+    d.appendChild(inr);
+    box.appendChild(d);
+  });
+}
+let chipT; function renderChipsSoon(){ clearTimeout(chipT); chipT=setTimeout(renderChips,300); }
+function move(i,dir){ const j=i+dir; [state.pages[i],state.pages[j]]=[state.pages[j],state.pages[i]]; renderPages(j); changed(); renderChipsSoon(); }
+function del(i){ state.pages.splice(i,1); renderPages(-1); changed(); renderChipsSoon(); toast("Page removed"); }
+$("#addPage").onclick=()=>{ state.pages.push({h:"",b:"",ref:"",v:""}); renderPages(state.pages.length-1); changed(); renderChipsSoon(); };
+
+function renderThemes(){
+  const box=$("#themes"); box.innerHTML="";
+  Object.entries(THEMES).forEach(([id,t])=>{
+    const b=el("button","sw"+(id===state.theme?" on":""));
+    const i=el("i"); i.style.background=t.bg; i.style.border="1px solid "+t.line; i.style.setProperty("--a",t.accent);
+    b.appendChild(i); b.appendChild(document.createTextNode(t.name));
+    b.onclick=()=>{ state.theme=id; renderThemes(); changed(true); };
+    box.appendChild(b);
+  });
+  [["styles",STYLES,"style"],["motions",MOTIONS,"motion"]].forEach(([bid,set,key])=>{
+    const bx=$("#"+bid); bx.innerHTML="";
+    Object.entries(set).forEach(([id,o])=>{
+      const c=el("button","chip"+((state[key]||Object.keys(set)[0])===id?" on":""),o.name);
+      c.onclick=()=>{ state[key]=id; renderThemes(); changed(true); };
+      bx.appendChild(c);
+    });
+  });
+}
+$("#replay").onclick=()=>renderPreview(true,true);
+
+function renderPreview(animate,fromTop){
+  const sc=document.querySelector("#preview .scroller"); const top=(sc&&!fromTop)?sc.scrollTop:0;
+  renderTract($("#preview"),state,{animate:!!animate});
+  const n=document.querySelector("#preview .scroller"); if(n) n.scrollTop=top;
+}
+
+function baseUrl(){
+  const s=(settings.site||"").trim();
+  if(s) return s.split("#")[0];
+  return location.origin+location.pathname;
+}
+function hostOk(){
+  if((settings.site||"").trim()) return true;
+  return /^https?:$/.test(location.protocol) && !/claude\.(ai|site)|claudeusercontent|localhost|127\.0\.0\.1/.test(location.host);
+}
+let currentLink="";
+async function updateLink(){
+  const p=toPayload(state);
+  const sc=shortCode(p);
+  currentLink=baseUrl()+"#"+(sc||"t="+await encode(p));
+  $("#link").textContent=currentLink;
+  $("#linkKind").textContent=sc?"Short link":p.t?"Template + your details":"Custom tract";
+  $("#linkLen").textContent=currentLink.length+" characters";
+  $("#openBtn").href=currentLink;
+  $("#smsBtn").href="sms:?&body="+encodeURIComponent(messageText());
+  $("#hostWarn").style.display=hostOk()?"none":"block";
+  renderQR();
+  updateLibNote();
+}
+/* ===== QR ===== */
+function makeQR(text){
+  const ecc = text.length>600 ? "L" : "M";
+  const q=qrcode(0,ecc); q.addData(text,"Byte"); q.make(); return q;
+}
+let lastQR=null;
+function renderQR(){
+  const box=$("#qrbox"); box.innerHTML="";
+  try{
+    const q=makeQR(currentLink); lastQR=q;
+    const n=q.getModuleCount(), quiet=4, size=n+quiet*2;
+    let path="";
+    for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(q.isDark(r,c)) path+="M"+(c+quiet)+" "+(r+quiet)+"h1v1h-1z";
+    box.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+size+' '+size+'" shape-rendering="crispEdges" role="img" aria-label="QR code"><rect width="100%" height="100%" fill="#fff"/><path d="'+path+'" fill="#111"/></svg>';
+    $("#qrInfo").textContent=n+" × "+n+" grid";
+    $("#qrWarn").style.display = n>57 ? "block" : "none";
+  }catch(e){
+    lastQR=null; box.appendChild(el("p","small","This tract is too long for a QR code. Shorten it or remove a page."));
+    $("#qrInfo").textContent=""; $("#qrWarn").style.display="none";
+  }
+}
+function drawQR(ctx,q,x,y,w,dark){
+  const n=q.getModuleCount(), m=w/n;
+  ctx.fillStyle=dark;
+  for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(q.isDark(r,c)) ctx.fillRect(Math.floor(x+c*m),Math.floor(y+r*m),Math.ceil(m),Math.ceil(m));
+}
+function savePNG(canvas,name){
+  canvas.toBlob(b=>{
+    if(!b){ toast("Couldn't make the image"); return; }
+    const url=URL.createObjectURL(b);
+    const a=document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+    toast("Saved to your downloads");
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+  },"image/png");
+}
+const slug = s => (s||"tract").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40)||"tract";
+$("#qrPng").onclick=()=>{
+  if(!lastQR) return;
+  const n=lastQR.getModuleCount(), px=Math.max(8,Math.ceil(1200/(n+8))), size=(n+8)*px;
+  const c=document.createElement("canvas"); c.width=c.height=size; const x=c.getContext("2d");
+  x.fillStyle="#fff"; x.fillRect(0,0,size,size); drawQR(x,lastQR,4*px,4*px,n*px,"#111");
+  savePNG(c,"qr-"+slug(state.title)+".png");
+};
+function wrapText(ctx,text,maxW){
+  const words=(text||"").split(/\s+/).filter(Boolean), lines=[]; let line="";
+  for(const w of words){ const t=line?line+" "+w:w; if(ctx.measureText(t).width>maxW && line){ lines.push(line); line=w; } else line=t; }
+  if(line) lines.push(line); return lines;
+}
+$("#qrCard").onclick=async()=>{
+  if(!lastQR) return;
+  try{ await document.fonts.ready; }catch(e){}
+  const th=THEMES[state.theme]||THEMES.dawn;
+  const W=1050, H=1500, c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  x.fillStyle=th.bg; x.fillRect(0,0,W,H);
+  x.fillStyle=th.accent; x.fillRect(0,0,W,14);
+  const pad=90; let y=170;
+  x.fillStyle=th.muted; x.font="600 30px Inter, system-ui, sans-serif";
+  x.fillText((state.from.n?"A MESSAGE FROM "+state.from.n:"A MESSAGE FOR YOU").toUpperCase(),pad,y);
+  y+=40; x.fillStyle=th.ink; x.font="600 84px Newsreader, Georgia, serif";
+  wrapText(x,state.title||"Untitled",W-pad*2).slice(0,3).forEach(l=>{ y+=92; x.fillText(l,pad,y); });
+  if(state.subtitle){ y+=30; x.fillStyle=th.muted; x.font="400 40px Newsreader, Georgia, serif";
+    wrapText(x,state.subtitle,W-pad*2).slice(0,3).forEach(l=>{ y+=54; x.fillText(l,pad,y); }); }
+  const qs=600, qx=(W-qs)/2, qy=Math.max(y+70, H-qs-260);
+  x.fillStyle="#fff"; const r=28, bx=qx-40, by=qy-40, bw=qs+80;
+  x.beginPath(); x.moveTo(bx+r,by); x.arcTo(bx+bw,by,bx+bw,by+bw,r); x.arcTo(bx+bw,by+bw,bx,by+bw,r); x.arcTo(bx,by+bw,bx,by,r); x.arcTo(bx,by,bx+bw,by,r); x.fill();
+  drawQR(x,lastQR,qx,qy,qs,"#111");
+  x.fillStyle=th.ink; x.font="600 40px Inter, system-ui, sans-serif"; x.textAlign="center";
+  x.fillText("Scan with your phone camera",W/2,qy+qs+120);
+  x.fillStyle=th.muted; x.font="400 30px Inter, system-ui, sans-serif";
+  x.fillText(state.from.c?state.from.c+(state.from.ci?" · "+state.from.ci:""):"About a 2 minute read",W/2,qy+qs+170);
+  savePNG(c,"card-"+slug(state.title)+".png");
+};
+
+/* ===== library export ===== */
+const slugify=s=>(s||"").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40);
+function libId(){ return slugify($("#libId").value)||slugify(state.title)||"my-tract"; }
+function libEntry(){
+  const e={id:libId(),name:(state.title||"Untitled").slice(0,40),title:state.title,subtitle:state.subtitle,
+    pages:state.pages.map(p=>({heading:p.h,message:p.b,ref:p.ref,verse:p.v})),
+    response:{heading:state.resp.h,message:state.resp.b,ref:state.resp.ref,verse:state.resp.v,prayer:state.resp.pr}};
+  return JSON.stringify(e,null,2)+",";
+}
+function updateLibNote(){
+  const id=libId(), taken=(TEMPLATES[id]&&id!==state.tpl)||["gn","hh","wj","t","blank"].includes(id);
+  $("#libIdNote").textContent = taken ? "\u201c"+id+"\u201d is already used. Pick another name." : "Short link will be: "+baseUrl()+"#"+id;
+}
+$("#libId").addEventListener("input",updateLibNote);
+$("#libCopy").onclick=async()=>{
+  try{ await navigator.clipboard.writeText(libEntry()); toast("Copied. Paste it into library.js"); }
+  catch(e){ toast("Couldn't copy on this device"); }
+};
+
+function messageText(){ const m=($("#msg").value||"").trim(); return (m?m+"\n\n":"")+currentLink; }
+
+$("#msg").value=settings.msg||DEFAULT_MSG;
+$("#msg").addEventListener("input",()=>{ settings.msg=$("#msg").value; store.set("sent.settings",settings); $("#smsBtn").href="sms:?&body="+encodeURIComponent(messageText()); });
+$("#site").value=settings.site||"";
+$("#site").addEventListener("input",()=>{ settings.site=$("#site").value; store.set("sent.settings",settings); updateLink(); });
+
+$("#copyBtn").onclick=async()=>{
+  try{ await navigator.clipboard.writeText(messageText()); toast("Copied. Paste it into a text."); }
+  catch(e){ const r=document.createRange(); r.selectNodeContents($("#link")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast("Select and copy the link above"); }
+};
+if(navigator.share){
+  $("#shareBtn").style.display="";
+  $("#shareBtn").onclick=async()=>{ try{ await navigator.share({text:($("#msg").value||"").trim(),url:currentLink}); }catch(e){} };
+}
+$("#resetBtn").onclick=()=>{ const id=(state.tpl==="blank"||!TEMPLATES[state.tpl])?"good-news":state.tpl; state=draftFromTemplate(id,state.from); save(); fullRender(); toast("Reset to "+TEMPLATES[id].name); };
+
+document.querySelectorAll("#seg button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#seg button").forEach(x=>x.classList.toggle("on",x===b));
+  $("#wrap").dataset.tab=b.dataset.t; window.scrollTo(0,0);
+});
+
+let toastT;
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2200); }
+
+// update chips also when cover/response edited
+document.querySelectorAll(".col-edit [data-k]").forEach(i=>i.addEventListener("input",renderChipsSoon));
+
+function fullRender(){ bindFields(); renderChips(); renderPages(-1); renderThemes(); renderPreview(true); updateLink(); }
+fullRender();
+})();
+</script>
+</body>
+</html>
