@@ -30,6 +30,10 @@ Upload every file to the top level of the repo, with `fonts/` kept as a folder. 
 
 When a Sent link is texted or posted, iMessage, Facebook and other apps show `og-image.png` (the Sent wordmark and "a message for you") with the title "A message for you." The preview deliberately doesn't name the church, so it reads like a personal message; the church is credited inside the tract. The preview tags in `index.html` use the full site address (`https://keyportbiblechurch.github.io/Sent./`). **If the repo is renamed or moved to a custom domain, update that address in the `og:url` and `og:image` tags.** Every link shows the same preview, by design, so the tract itself stays a surprise and nothing personal appears in the preview.
 
+## Add to home screen
+
+The "Get the app" button at the top of the builder (hidden once Sent is already installed) opens short, phone-specific steps for adding Sent to the home screen: Safari on iPhone and iPad, including the newer "More" (•••) menu, and Chrome on Android. Where Chrome offers it, an "Add to home screen" button installs Sent in one tap. If Sent was opened inside another app's browser (like Facebook), it explains how to open it in Safari or Chrome first.
+
 ## Welcome tour
 
 The first time someone opens the builder, a five-card tour explains how Sent works. The "?" button at the top and the "How Sent works" link at the bottom reopen it. Its text is in `index.html` (search for `Welcome to Sent`).
