@@ -19,6 +19,7 @@ Each tract ends with next steps: Read the Bible (the Gospel of John, BSB), Find 
 | `index.html` | The app |
 | `library.js` | Church settings and the approved tract library |
 | `manifest.webmanifest`, `icon-*.png` | Home-screen app name and icons |
+| `sw.js` | A tiny helper that lets Android phones offer one-tap install. It caches and tracks nothing. |
 | `og-image.png` | The preview card shown when a link is texted or posted |
 | `fonts/` | Self-hosted fonts |
 
@@ -32,7 +33,7 @@ When a Sent link is texted or posted, iMessage, Facebook and other apps show `og
 
 ## Add to home screen
 
-The "Get the app" button at the top of the builder (hidden once Sent is already installed) opens short, phone-specific steps for adding Sent to the home screen: Safari on iPhone and iPad, including the newer "More" (•••) menu, and Chrome on Android. Where Chrome offers it, an "Add to home screen" button installs Sent in one tap. If Sent was opened inside another app's browser (like Facebook), it explains how to open it in Safari or Chrome first.
+The "Get the app" button at the top of the builder (hidden once Sent is already installed) opens short, phone-specific steps for adding Sent to the home screen: Safari on iPhone and iPad, including the newer "More" (•••) menu, and Chrome on Android. On Android, the "Add to home screen" button installs Sent in one tap when Chrome allows it, and otherwise jumps to the menu steps. iPhones don't let websites install themselves, so iPhone users see Safari's three-step instructions. If Sent was opened inside another app's browser (like Facebook), it explains how to open it in Safari or Chrome first.
 
 ## Welcome tour
 
