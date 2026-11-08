@@ -8,7 +8,7 @@ Every tract is written and approved by the church. People using Sent choose a tr
 - their first name ("A message from Sam")
 - a short note, shown separately as "A note from Sam"
 - an optional phone number and/or email for "I prayed this," "Text me," and "Email me" buttons
-- colors, a layout style, and an animation
+- colors (9 palettes), a style (12, including Letter, Stories, Illuminated, and Starlight), and an animation
 
 Each tract ends with next steps: Read the Bible (the Gospel of John, BSB), Find a church near you, and Visit Keyport Bible Church.
 
@@ -29,6 +29,10 @@ Upload every file to the top level of the repo, with `fonts/` kept as a folder. 
 ## Link previews
 
 When a Sent link is texted or posted, iMessage, Facebook and other apps show `og-image.png` (the Sent wordmark and "a message for you") with the title "A message for you." The preview deliberately doesn't name the church, so it reads like a personal message; the church is credited inside the tract. The preview tags in `index.html` use the full site address (`https://keyportbiblechurch.github.io/Sent./`). **If the repo is renamed or moved to a custom domain, update that address in the `og:url` and `og:image` tags.** Every link shows the same preview, by design, so the tract itself stays a surprise and nothing personal appears in the preview.
+
+## Welcome tour
+
+The first time someone opens the builder, a five-card tour explains how Sent works. The "?" button at the top and the "How Sent works" link at the bottom reopen it. Its text is in `index.html` (search for `Welcome to Sent`).
 
 ## Follow-up guide
 
@@ -58,5 +62,5 @@ A link looks like `…/#grief.nx~Sam!3605550100$sam%40example%2Ecom*A_short_note
 ## Credits
 
 - Scripture: Berean Standard Bible (BSB), public domain.
-- Fonts: Newsreader and Inter, SIL Open Font License (`fonts/OFL-LICENSE.txt`).
+- Fonts: Newsreader, Inter, and Caveat (Letter style signature), SIL Open Font License (`fonts/OFL-LICENSE.txt`).
 - QR codes: qrcode-generator by Kazuhiko Arase, MIT License.
