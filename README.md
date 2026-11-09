@@ -49,7 +49,7 @@ All tracts live in `library.js`. To add one, copy an existing entry, change the 
 
 Scripture is quoted from the Berean Standard Bible (BSB), public domain. The current library's verses were taken directly from the official BSB text published by BSB Publishing.
 
-Church details and next-step links (church name, website, Bible link, church finder) are in `window.SENT_SETTINGS` at the top of `library.js`.
+Church details and next-step links are in `window.SENT_SETTINGS` at the top of `library.js`: church name, website, Bible link, the "What to look for" checklist (`churchLookFor`), the map search (`churchMapSearch`), and optional vetted directories (`churchFinders`, empty by default). "Find a church near you" opens a short page with the checklist, a note to ask the sender or contact the church, and a "Search for churches near me" button that opens a map search on the reader's phone.
 
 ## Links
 
@@ -59,7 +59,7 @@ A link looks like `…/#grief.nx~Sam;1Qm9yZXN0…*A_short_note`: the tract id, t
 
 - No accounts, sign-ins, analytics, tracking, or cookies.
 - No outside services. The fonts, icons, and QR code generator are all part of the site.
-- The "Find a church near you" button opens a map search on the reader's own phone. Sent never sees their location.
+- "Search for churches near me" opens a map search on the reader's own phone; Sent never asks for or sees anyone's location.
 - A tract's personal details (name, note, phone, email) live only in its link, after the `#`. Browsers never send that part of a link to the server.
 - If a sender adds a phone number or email, it's scrambled in the link so it isn't visible at a glance or easy for web scrapers to collect. This isn't encryption: anyone the link reaches can still use the text and email buttons.
 - The sender's details save in their own browser only.

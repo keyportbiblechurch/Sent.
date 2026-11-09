@@ -21,8 +21,19 @@ window.SENT_SETTINGS = {
   website:     "https://www.keyportbible.org",
   // "Read the Bible" button: the Gospel of John in the BSB on Bible.com (opens the YouVersion app if installed)
   bibleLink:   "https://www.bible.com/bible/3034/JHN.1.BSB",
-  // "Find a church near you" button: opens a map search on the reader's phone; no location is shared with Sent
-  churchFinder:"https://www.google.com/maps/search/?api=1&query=churches+near+me"
+  // "Find a church near you" opens a short page with the checklist below and a map search button.
+  // Optional: list vetted church directories here, e.g. { name: "...", note: "...", url: "https://..." }
+  churchFinders: [],
+  // The "Search for churches near me" button: opens a map search on the reader's own phone (Sent never sees their location).
+  churchMapSearch: "https://www.google.com/maps/search/?api=1&query=churches+near+me",
+  // "What to look for in a church" checklist shown on that page.
+  churchLookFor: [
+    "The Bible is taught as God's Word, and the preaching explains what it actually says.",
+    "Jesus is clearly proclaimed: His death for our sins and His resurrection.",
+    "Salvation is taught as God's free gift, received by grace through faith, not earned.",
+    "People are called to turn from sin, trust Jesus, and follow Him.",
+    "The leaders are humble and accountable, and the people love one another."
+  ]
 };
 
 window.SENT_LIBRARY = [
