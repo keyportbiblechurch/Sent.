@@ -53,7 +53,7 @@ Church details and next-step links (church name, website, Bible link, church fin
 
 ## Links
 
-A link looks like `…/#grief.nx~Sam!3605550100$sam%40example%2Ecom*A_short_note`: the tract id, then the optional look letters, first name, phone, email, and note. Links only open tracts from the approved library. Any link that asks for a tract that isn't in the library, including custom tracts made with earlier versions of Sent, shows "This tract isn't available."
+A link looks like `…/#grief.nx~Sam;1Qm9yZXN0…*A_short_note`: the tract id, then the optional look letters, first name, the sender's phone and/or email (scrambled), and note. Older links that show the phone (`!3605550100`) and email (`$…`) in plain text still work. Links only open tracts from the approved library. Any link that asks for a tract that isn't in the library, including custom tracts made with earlier versions of Sent, shows "This tract isn't available."
 
 ## Privacy
 
@@ -61,7 +61,7 @@ A link looks like `…/#grief.nx~Sam!3605550100$sam%40example%2Ecom*A_short_note
 - No outside services. The fonts, icons, and QR code generator are all part of the site.
 - The "Find a church near you" button opens a map search on the reader's own phone. Sent never sees their location.
 - A tract's personal details (name, note, phone, email) live only in its link, after the `#`. Browsers never send that part of a link to the server.
-- If a sender adds a phone number or email, anyone the link is forwarded to could see it.
+- If a sender adds a phone number or email, it's scrambled in the link so it isn't visible at a glance or easy for web scrapers to collect. This isn't encryption: anyone the link reaches can still use the text and email buttons.
 - The sender's details save in their own browser only.
 
 ## Credits
