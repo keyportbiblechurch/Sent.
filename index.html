@@ -1048,12 +1048,23 @@ document.querySelectorAll(".churchPlace").forEach(e=>e.textContent=CFG.place);
 const unavailable = v => {
   v.innerHTML='<div class="tract"><div class="scroller"><section class="pg"><h2>This tract isn\'t available</h2><div class="body"><p>It may have been removed, or part of the link may have been cut off. Ask the person who sent it for a new link.</p></div></section></div></div>';
 };
+const noteFixes = {
+  "we pray thank it blesses": "we pray that it blesses"
+};
+const fixTypos = o => {
+  for (const k in o) {
+    if (typeof o[k] === "string") {
+      for (const [bad, good] of Object.entries(noteFixes)) o[k] = o[k].split(bad).join(good);
+    } else if (o[k] && typeof o[k] === "object") fixTypos(o[k]);
+  }
+};
 const hash=location.hash;
 const oldCode=(hash.match(/^#t=([A-Za-z0-9_-]+)$/)||[])[1];
 if(hash.length>2){
   const v=$("#viewer"); v.style.display="block";
   (oldCode ? parseOld(oldCode) : Promise.resolve(parseLink(hash))).then(st=>{
     if(!st || st.missing){ unavailable(v); return; }
+    fixTypos(st);
     const d=compose(st);
     const r=renderTract(v,d,{makeOwnUrl:location.origin+location.pathname,keys:true});
     document.body.style.background=r.theme.bg;
@@ -1062,7 +1073,7 @@ if(hash.length>2){
   }).catch(()=>unavailable(v));
   return;
 }
-
+  
 /* ===== BUILDER MODE ===== */
 $("#app").style.display="block";
 document.body.classList.add("builder");
